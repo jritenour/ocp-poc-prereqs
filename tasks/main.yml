@@ -1,0 +1,45 @@
+---
+# tasks file for ocp-poc-prereqs
+- name: Install dns python package
+  pip:
+    name: dnspython
+
+- name: Check API DNS Record
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.dig', 'api.{{ cluster }}.{{ domain }}.')}}"
+
+- name: Check API Int DNS Record for UPI installation
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.dig', 'api-int.{{ cluster }}.{{ domain }}.')}}"
+  tags: upi
+
+- name: Check Wildcard DNS Record
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.dig', '*.apps.{{ cluster }}.{{ domain }}.')}}"
+
+- name: nmap broadcast search for DHCP
+  command: nmap --script broadcast-dhcp-discover
+  register: dhcp
+
+- debug: msg="{{ dhcp.stdout_lines }}"
+
+- name: Auth and SSL test for the mirror registry
+  uri:
+    url: "https://{{ reg_addr }}"
+    user: "{{ reg_user }}"
+    password: "{{ reg_pass }}"
+    return_content: yes
+    status_code: 200
+  register: regtest
+  tags: offline
+
+- debug: msg="{{ regtest }}"
+  tags: offline
+
+- name: Inspect image tags in mirror registry
+  command: skopeo list-tags docker://"{{ reg_addr }}""{{ image_path }}" --creds "{{ reg_user }}":"{{ reg_pass }}"
+  register: images
+  tags: offline
+
+- debug: msg="{{ images.stdout }}"
+  tags: offline
