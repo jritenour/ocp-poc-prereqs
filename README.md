@@ -18,10 +18,15 @@ A description of the settable variables for this role should go here, including 
 Currently, the following variables are exposed.
 
 domain: example.com # the domain.name your openshift environment will be installed in
+
 cluster: ocp # the subdomain your openshift environment will be install - this will combine with the domain to create your FQDNS, eg api.ocp.example.com
+
 reg_user: user # username for your openshift mirror registry, if doing an offline installation
+
 reg_pass: pass # password for your openshift mirror registry, if doing an offline isntallation
+
 reg_addr: registry.example.com:5000 # your mirrored docker registry fdqn + port number
+
 image_path: /ocp4/openshift4 # The path where mirrored images are stored in your registr
 
 
